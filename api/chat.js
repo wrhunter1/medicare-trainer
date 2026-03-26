@@ -5,17 +5,12 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured in Vercel environment variables.' })
+    return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not set in Vercel environment variables.' })
   }
 
   try {
     const { system, messages } = req.body
-
-    const body = {
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1024,
-      messages,
-    }
+    const body = { model: 'claude-sonnet-4-20250514', max_tokens: 1024, messages }
     if (system) body.system = system
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -29,7 +24,6 @@ export default async function handler(req, res) {
     })
 
     const data = await response.json()
-
     if (!response.ok) {
       return res.status(response.status).json({ error: data.error?.message || 'Anthropic API error' })
     }
